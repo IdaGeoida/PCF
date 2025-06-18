@@ -1,28 +1,14 @@
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
+import { BarChart, Bar, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts'
 
-interface Props {
-  data: Record<number, number>
-  overall: number
-}
-
-export function ResultsView({ data, overall }: Props) {
+export function ResultsView({ data, overall }:{ data: Record<number, number>; overall: number }) {
   const chartData = Object.entries(data).map(([id, value]) => ({ id, value }))
   return (
     <div>
-      <h2>Wynik ogólny: {overall.toFixed(2)}</h2>
+      <h3>Overall: {overall.toFixed(2)}</h3>
       <table>
-        <thead>
-          <tr>
-            <th>Proces</th>
-            <th>Średnia</th>
-          </tr>
-        </thead>
         <tbody>
-          {Object.entries(data).map(([id, val]) => (
-            <tr key={id}>
-              <td>{id}</td>
-              <td>{val.toFixed(2)}</td>
-            </tr>
+          {Object.entries(data).map(([id,v]) => (
+            <tr key={id}><td>{id}</td><td>{v.toFixed(2)}</td></tr>
           ))}
         </tbody>
       </table>
