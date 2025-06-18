@@ -1,0 +1,15 @@
+# Virtual environment directories
+.venv/
+venv/
+
+# Node modules
+node_modules/
+
+# IDE files
+.idea/
+.vscode/
+
+# Python cache
+__pycache__/
+*.pyc
+
