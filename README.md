@@ -1,52 +1,39 @@
-# PCF
+# PCF Self-Assessment
 
-This project contains a FastAPI backend with a small React frontend. Docker is
-used to provide the runtime infrastructure and PostgreSQL database. Alembic is
-used for database migrations.
+This project includes a FastAPI backend with a React frontend used to score PCF processes. Docker is used for local development along with Alembic migrations.
 
 ## Requirements
 
-- **Python**: 3.13 or newer. The provided `Dockerfile` installs the backend
-  dependencies from `requirements.txt` using Python 3.13.
-- **Docker** and **docker-compose**: required for running the application stack
-  locally.
-- **Node.js**: a recent Node.js LTS (18+) is required once the frontend is
-  installed. The `frontend` directory contains the React code.
+- **Python** 3.13 or newer (see `requirements.txt`)
+- **Docker** and **docker compose** for container management
+- **Node.js** 18+ once the frontend is installed
 
-## Running the stack
+## Backend
 
-1. Start the database and backend services:
+```bash
+# build containers and start services
+docker compose up --build -d
 
-   ```bash
-   docker-compose up --build
-   ```
+# run migrations inside the web service
+docker compose exec web alembic upgrade head
+```
 
-2. Apply database migrations after the containers are running:
+The API will be available at `http://localhost:8000` and documentation at `http://localhost:8000/docs`.
 
-   ```bash
-   docker-compose exec web alembic upgrade head
-   ```
+## Frontend
 
-3. Start the frontend development server (requires Node.js):
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-   ```bash
-   cd frontend
-   npm install
-   npm start
-   ```
-
-The backend will be available at [http://localhost:8000](http://localhost:8000)
-and the frontend at [http://localhost:3000](http://localhost:3000) when using the
-Create React App defaults.
+The React app runs on `http://localhost:5173`.
 
 ## Usage notes
 
-- The FastAPI application entry point is [`app/main.py`](app/main.py). API
-  routes are defined under [`app/api`](app/api/).
-- Database models are in [`app/models`](app/models/), and migrations live under
-  [`alembic`](alembic/).
-- The React application bootstraps from
-  [`frontend/src/App.tsx`](frontend/src/App.tsx).
+- Entry point: [`app/main.py`](app/main.py)
+- API routes under [`app/api`](app/api/)
+- Models in [`app/models`](app/models/)
+- Frontend root at [`frontend/src/App.tsx`](frontend/src/App.tsx)
 
-This repository assumes a working Docker and Node setup to run both backend and
-frontend locally.
