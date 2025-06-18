@@ -14,3 +14,11 @@ export interface Process {
   category_id: number;
   applicability: Applicability;
 }
+
+export interface ScoreInput {
+  process_id: number
+  level_general: number
+  level_detailed: number
+  level_extension?: number
+}
+
