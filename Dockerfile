@@ -1,17 +1,11 @@
 FROM python:3.13-slim
-
 WORKDIR /app
-
-# Skopiuj tylko plik z zależnościami
-COPY requirements.txt .
-
-# Zainstaluj wszystkie pakiety
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Skopiuj resztę aplikacji
+COPY requirements.txt ./
+RUN apt-get update \
+    && apt-get install -y build-essential rustc cargo \
+    && pip install --no-cache-dir -r requirements.txt \
+    && apt-get purge -y build-essential rustc cargo \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 COPY . .
-
-EXPOSE 8000
-
-# Domyślne polecenie uruchomienia
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

@@ -1,39 +1,31 @@
-// frontend/src/components/GeneralForm.tsx
+import { useForm, Controller } from 'react-hook-form'
+import { Applicability, Process } from '../types'
 
-import React, { useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { getProcesses } from '../api/processes';
-import { Process, Applicability } from '../types';
-
-interface FormValues {
-  // klucze to stringi (id procesu zamienione na string)
-  [processId: string]: Applicability;
+interface Props {
+  processes: Process[]
+  onNext: (vals: Record<number, Applicability>) => void
 }
 
-export function GeneralForm({
-  onNext,
-}: {
-  onNext: (values: FormValues) => void;
-}) {
-  const { control, handleSubmit } = useForm<FormValues>();
-  const [processes, setProcesses] = useState<Process[]>([]);
-
-  useEffect(() => {
-    getProcesses().then((res) => setProcesses(res.data));
-  }, []);
+export function GeneralForm({ processes, onNext }: Props) {
+  const { control, handleSubmit } = useForm<Record<string, Applicability>>()
 
   return (
-    <form onSubmit={handleSubmit(onNext)}>
-      <h2>Poziom ogólny</h2>
-      {processes.map((p) => (
-        <div key={p.id} style={{ marginBottom: '1rem' }}>
-          <label htmlFor={`proc-${p.id}`}>{p.name}</label>
+    <form onSubmit={handleSubmit((vals) => {
+      const data: Record<number, Applicability> = {}
+      for (const k of Object.keys(vals)) {
+        data[Number(k)] = vals[k]
+      }
+      onNext(data)
+    })}>
+      {processes.map(p => (
+        <div key={p.id}>
+          <label>{p.name}</label>
           <Controller
             name={p.id.toString()}
             control={control}
             defaultValue={Applicability.MZ}
             render={({ field }) => (
-              <select {...field} id={`proc-${p.id}`}>
+              <select {...field}>
                 <option value={Applicability.MZ}>MZ</option>
                 <option value={Applicability.WP}>WP</option>
                 <option value={Applicability.NZ}>NZ</option>
@@ -42,7 +34,7 @@ export function GeneralForm({
           />
         </div>
       ))}
-      <button type="submit">Dalej</button>
+      <button type="submit">Next</button>
     </form>
-  );
+  )
 }

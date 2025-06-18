@@ -1,11 +1,11 @@
+from typing import Optional
 from pydantic import BaseModel
-from typing import List, Optional
 from enum import Enum
 
 class Applicability(str, Enum):
-    MZ = "MZ"
-    WP = "WP"
-    NZ = "NZ"
+    MZ = 'MZ'
+    WP = 'WP'
+    NZ = 'NZ'
 
 class ProcessCreate(BaseModel):
     name: str
