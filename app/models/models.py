@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, Enum as SQLEnum, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
 import enum
+from sqlalchemy import Column, Enum as SQLEnum, ForeignKey, Integer, String
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
@@ -20,3 +20,4 @@ class Process(Base):
     name = Column(String, nullable=False)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
     applicability = Column(SQLEnum(Applicability), nullable=False)
+

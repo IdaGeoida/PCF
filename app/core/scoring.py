@@ -1,19 +1,19 @@
-from typing import List
-from app.schemas import ScoreInput
-from app.models.models import Process, Applicability
+from typing import List, Dict
+from sqlalchemy.orm import Session
 
-def calculate_scores(db, scores: List[ScoreInput]):
-    # filtrujemy NZ
-    valid = []
+from app.models.models import Process, Applicability
+from app.schemas import ScoreInput
+
+
+def calculate_scores(db: Session, scores: List[ScoreInput]) -> Dict:
+    per_process: Dict[int, float] = {}
     for s in scores:
-        proc = db.query(Process).get(s.process_id)
-        if proc.applicability == Applicability.NZ:
+        proc = db.get(Process, s.process_id)
+        if not proc or proc.applicability == Applicability.NZ:
             continue
-        general = s.level_general
-        detailed = s.level_detailed
-        ext = s.level_extension or 0
-        # średnia dla procesu
-        avg = (general + detailed + ext) / ((3 if s.level_extension is not None else 2))
-        valid.append(avg)
-    overall = sum(valid) / len(valid) if valid else 0
-    return {"overall": overall, "by_process": dict(zip([s.process_id for s in scores], valid))}
+        values = [s.level_general, s.level_detailed]
+        if s.level_extension is not None:
+            values.append(s.level_extension)
+        per_process[s.process_id] = sum(values) / len(values)
+    overall = sum(per_process.values()) / len(per_process) if per_process else 0
+    return {"overall": overall, "by_process": per_process}

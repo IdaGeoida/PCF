@@ -1,34 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react'
+import { Applicability, Process, ScoreInput } from './types'
+import { getProcesses } from './api/processes'
+import { sendScores } from './api/scoring'
+import { GeneralForm } from './components/GeneralForm'
+import { DetailedForm } from './components/DetailedForm'
+import { ResultsView } from './components/ResultsView'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [step, setStep] = useState<'general' | 'detail' | 'results'>('general')
+  const [processes, setProcesses] = useState<Process[]>([])
+  const [applicability, setApplicability] = useState<Record<string, Applicability>>({})
+  const [results, setResults] = useState<{ overall: number; by_process: Record<number, number> } | null>(null)
+
+  useEffect(() => {
+    getProcesses().then((res) => setProcesses(res.data))
+  }, [])
+
+  const handleGeneral = (vals: Record<string, Applicability>) => {
+    setApplicability(vals)
+    setStep('detail')
+  }
+
+  const handleScores = (scores: ScoreInput[]) => {
+    sendScores(scores).then((res) => {
+      setResults(res.data)
+      setStep('results')
+    })
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      {step === 'general' && <GeneralForm onNext={handleGeneral} />}
+      {step === 'detail' && (
+        <DetailedForm processes={processes} applicability={applicability} onSubmit={handleScores} />
+      )}
+      {step === 'results' && results && <ResultsView data={results.by_process} overall={results.overall} />}
+    </div>
   )
 }
 
