@@ -1,12 +1,39 @@
 # PCF Project
 
-This repository contains a backend service and a React frontend.
+This repository contains a FastAPI backend and a small React frontend.
 
-## Running the Frontend
+## Environment requirements
 
-1. Navigate to the `frontend` directory.
-2. Install dependencies with `npm install`.
-3. Start the development server:
+- **Python 3.13+** (defined in the [Dockerfile](./Dockerfile))
+- **Docker** and **docker-compose** for running the stack
+- **Node.js** for the React frontend
+
+## Getting started
+
+### Backend
+
+1. Build and start the services:
+
+```bash
+docker-compose up --build
+```
+
+2. Apply database migrations after the containers are running:
+
+```bash
+docker-compose exec web alembic upgrade head
+```
+
+### Frontend
+
+1. Navigate to the `frontend` directory and install dependencies:
+
+```bash
+cd frontend
+npm install
+```
+
+2. Start the development server:
 
 ```bash
 npm start
@@ -14,8 +41,13 @@ npm start
 
 The application will be served on `http://localhost:5173/` by default.
 
-To build the production bundle, run:
+## Project structure
 
-```bash
-npm run build
-```
+- [`app/main.py`](./app/main.py) – FastAPI entry point
+- [`app/models`](./app/models) – database models
+- [`app/api`](./app/api) – API routes
+- [`alembic`](./alembic) – database migrations
+
+Use Docker for the simplest setup. If you prefer a local Python environment,
+install the requirements from `requirements.txt` before running the commands
+above.
